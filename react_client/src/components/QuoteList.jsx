@@ -3,12 +3,18 @@ import axios from 'axios';
 
 const QuoteList = (props) => {
   const [quotes, setQuotes] = useState([]);
-
+  const fetchQuotes = () =>{
+  // Fetch quotes from the API
+  axios.get('https://localhost:7082/quotes')
+  .then(response => setQuotes(response.data))
+  .catch(error => console.error('Error fetching quotes:', error));
+  }
   useEffect(() => {
-    // Fetch quotes from the API
-    axios.get('https://localhost:7082/quotes')
-      .then(response => setQuotes(response.data))
-      .catch(error => console.error('Error fetching quotes:', error));
+    fetchQuotes();
+
+      const intervalId = setInterval(fetchQuotes, 500);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
