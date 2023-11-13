@@ -18,7 +18,7 @@ function App() {
               <AddQuote/>
             </div>
             <div className='h-[50%]'>
-              <EditQuote/>
+              {/* <EditQuote/> */}
             </div>
           </div>
       </section>
