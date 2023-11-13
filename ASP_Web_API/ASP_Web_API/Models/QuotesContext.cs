@@ -52,9 +52,13 @@ namespace ASP_Web_API.Models
            );
 
             modelBuilder.Entity<Tag>().HasData(
-                new Tag { Id = 1, Name = "Funny" },
-                new Tag { Id = 2, Name = "Philosophical" },
-                new Tag { Id = 3, Name = "Motivational" }
+                new Tag { Id = 1, Name = "Leadership" },
+                new Tag { Id = 2, Name = "Motivational" },
+                new Tag { Id = 3, Name = "Life" },
+                new Tag { Id = 4, Name = "Attitude" },
+                new Tag { Id = 5, Name = "Wisdom" },
+                new Tag { Id = 6, Name = "Love" },
+                new Tag { Id = 7, Name = "Happiness" }
             );
             base.OnModelCreating(modelBuilder);
         }
