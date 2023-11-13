@@ -30,8 +30,19 @@ namespace ASP_Web_API.Controllers
         [HttpPost("/addNewQuote")]
         public IActionResult AddNewQuote([FromBody] NewQuoteRequest newQuoteRequest)
         {
-            Tag tag = _quotesContext.Tags.Where(t=>t.Name == newQuoteRequest.Tag).FirstOrDefault();
+            // Check if Text is null or empty
+            if (string.IsNullOrWhiteSpace(newQuoteRequest.Text))
+            {
+                return BadRequest("Text cannot be null or empty.");
+            }
 
+            Tag tag = _quotesContext.Tags.FirstOrDefault(t => t.Name == newQuoteRequest.Tag);
+            if (tag == null)
+            {
+                return BadRequest("Tag not found.");
+            }
+
+            // Create the Quote
             Quote quote = new Quote()
             {
                 Text = newQuoteRequest.Text,
@@ -39,10 +50,45 @@ namespace ASP_Web_API.Controllers
                 QuoteTags = new List<QuoteTag> { new QuoteTag { Tag = tag } }
             };
 
+            // Add and save the new quote
             _quotesContext.Quotes.Add(quote);
             _quotesContext.SaveChanges();
 
             return Ok(newQuoteRequest);
+        }
+
+
+        [HttpGet("/quotes/{id}")]
+        public IActionResult GetQuoteById(int id)
+        {
+            Quote quote = _quotesContext.Quotes.FirstOrDefault(t => t.Id == id);
+
+            return Ok(quote);
+        }
+        [HttpGet("/quotes/tag={name}")]
+        public IActionResult GetQuoteByTag(string name)
+        {
+            Tag tag = _quotesContext.Tags
+        .Include(t => t.QuoteTags)
+        .ThenInclude(qt => qt.Quote)
+        .FirstOrDefault(t => t.Name == name);
+
+            if (tag == null)
+            {
+                return NotFound($"Tag with name '{name}' not found.");
+            }
+
+            List<QuoteDto> quotes = tag.QuoteTags
+                .Select(qt => new QuoteDto
+                {
+                    Id = qt.Quote.Id,
+                    Text = qt.Quote.Text,
+                    Author = qt.Quote.Author
+                    // Add more properties as needed
+                })
+                .ToList();
+
+            return Ok(quotes);
         }
     }
 }
