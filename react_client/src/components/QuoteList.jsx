@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-const QuoteList = (props) => {
+const QuoteList = ({handleQuoteClick}) => {
   const [quotes, setQuotes] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const searchFilterRef = useRef('');
@@ -109,7 +109,7 @@ const QuoteList = (props) => {
 
       <ul>
         {(quotes) && quotes.map(quote => (
-          <li key={quote.id} className="mb-2">
+          <li key={quote.id} className="mb-2 hover:cursor-pointer hover:bg-gray-200	hover:text-black" onClick={() => handleQuoteClick(quote)}>
             <p className="text-white-800"><strong>"{quote.text}"</strong></p>
             <p className="text-gray-500">- {quote.author}</p>
           </li>
