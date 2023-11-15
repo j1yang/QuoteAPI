@@ -10,6 +10,8 @@ namespace ASP_Web_API.Models
 
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<QuoteTag> QuoteTags { get; set; }
+
         public DbSet<Tag> Tags { get; set; }
 
 
@@ -41,14 +43,17 @@ namespace ASP_Web_API.Models
             modelBuilder.Entity<Like>().HasData(
                 new Like { Id = 1, QuoteId = 1 },
                 new Like { Id = 2, QuoteId = 2 },
-                new Like { Id = 3, QuoteId = 3 }
+                new Like { Id = 3, QuoteId = 3 },
+                new Like { Id = 4, QuoteId = 4 },
+                new Like { Id = 5, QuoteId = 5 }
             );
 
             modelBuilder.Entity<QuoteTag>().HasData(
                new QuoteTag { QuoteId = 1, TagId = 1 },
                new QuoteTag { QuoteId = 2, TagId = 2 },
                new QuoteTag { QuoteId = 3, TagId = 1 },
-               new QuoteTag { QuoteId = 4, TagId = 3 }
+               new QuoteTag { QuoteId = 4, TagId = 3 },
+               new QuoteTag { QuoteId = 5, TagId = 2 }
            );
 
             modelBuilder.Entity<Tag>().HasData(

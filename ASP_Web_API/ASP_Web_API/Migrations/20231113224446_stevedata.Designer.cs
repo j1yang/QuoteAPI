@@ -3,6 +3,7 @@ using ASP_Web_API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASP_Web_API.Migrations
 {
     [DbContext(typeof(QuotesContext))]
-    partial class QuotesContextModelSnapshot : ModelSnapshot
+    [Migration("20231113224446_stevedata")]
+    partial class stevedata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,7 +134,7 @@ namespace ASP_Web_API.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("QuoteTags");
+                    b.ToTable("QuoteTag");
 
                     b.HasData(
                         new
