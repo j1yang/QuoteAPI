@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { FaThumbsUp } from 'react-icons/fa'; 
 
 const QuoteList = ({handleQuoteClick}) => {
   const [quotes, setQuotes] = useState([]);
@@ -8,7 +9,18 @@ const QuoteList = ({handleQuoteClick}) => {
   const quoteIdRef = useRef('');
   const tagRef = useRef('');
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [likes, setLikes] = useState({});
 
+  const handleLikeClick = async (quoteId) => {
+    try {
+      await axios.post(`https://localhost:7082/Like/${quoteId}`);
+      fetchLikes();
+
+    } catch (error) {
+      console.error('Error liking quote:', error);
+    }
+  };
+  
   const updateFetch =() => {
     if(searchFilterRef.current.value === 'all'){
       fetchQuotes();
@@ -26,6 +38,16 @@ const QuoteList = ({handleQuoteClick}) => {
     axios.get('https://localhost:7082/quotes')
         .then(response => {
           setQuotes(response.data);
+        })
+        .catch(error => console.error('Error fetching quotes:', error));
+    //console.log('fetching All Quotes')
+  }
+  const fetchLikes = () => {
+    axios.get('https://localhost:7082/Likes')
+        .then(response => {
+          {
+            setLikes(response.data)
+          };
         })
         .catch(error => console.error('Error fetching quotes:', error));
     //console.log('fetching All Quotes')
@@ -64,10 +86,12 @@ const QuoteList = ({handleQuoteClick}) => {
 
   useEffect(() => {
     fetchTag();
-    const intervalId = setInterval(updateFetch, 100);
+    fetchLikes();
+    const intervalId = setInterval(updateFetch, 1000);
 
     return () => clearInterval(intervalId);
   }, [forceUpdate]);
+  
 
   const handleSearchFilterChange = (event) => {
     //console.log('Selected filter:', event.target.value);
@@ -110,11 +134,17 @@ const QuoteList = ({handleQuoteClick}) => {
       <ul>
         {(quotes) && quotes.map(quote => (
           <li key={quote.id} className="mb-2 hover:cursor-pointer hover:bg-gray-200	hover:text-black" onClick={() => handleQuoteClick(quote)}>
-            <p className="text-white-800"><strong>"{quote.text}"</strong></p>
+            <div className='flex justify-between h-[30px]'>
+              <p className="text-white-800"><strong>"{quote.text}"</strong></p>
+              <div className='w-[50px] h-[10px] bg-transparent border-none m-0 p-0 flex my-2' onClick={() => handleLikeClick(quote.id)}>
+                <FaThumbsUp /> 
+                <p className='ml-2 decoration-transparent'>{(likes?.filter(like => like.quoteId === quote.id) || []).length}</p>
+              </div>
+            </div>
             <p className="text-gray-500">- {quote.author}</p>
           </li>
         ))}
-        {quotes.length === 0 && <li><p key={-1}>There is no quotes...</p></li>}
+        {quotes.length === 0 && <li><p key={-1}>There are no quotes...</p></li>}
       </ul>
     </div>
   );
