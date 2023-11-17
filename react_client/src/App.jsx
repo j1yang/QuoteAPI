@@ -4,6 +4,7 @@ import EditQuote from './components/EditQuote';
 import QuoteList from './components/QuoteList';
 
 import './App.css';
+import HandleTag from './components/ManageTag';
 
 function App() {
   const [quoteToEdit, setQuoteToEdit] = useState(null);
@@ -13,27 +14,27 @@ function App() {
 
   const handleQuoteClick = (quote) => {
     setQuoteToEdit(quote);
-    setOpenEditQuote(true);
-    setOpenAddQuote(false);
-    setOpenAddTag(false); // Close AddTag if it's open
   };
 
   const handleStartAdd = () => {
     setOpenAddQuote(true);
     setOpenEditQuote(false);
-    setOpenAddTag(false); // Close AddTag if it's open
+    setOpenAddTag(false); 
+    setQuoteToEdit(null);
   };
 
   const handleStartEdit = () => {
     setOpenEditQuote(true);
     setOpenAddQuote(false);
-    setOpenAddTag(false); // Close AddTag if it's open
+    setOpenAddTag(false);
+    setQuoteToEdit(null);
   };
 
   const handleStartAddTag = () => {
     setOpenAddTag(true);
     setOpenAddQuote(false);
-    setOpenEditQuote(false); // Close AddQuote and EditQuote if they're open
+    setOpenEditQuote(false); 
+    setQuoteToEdit(null);
   };
 
   return (
@@ -51,12 +52,12 @@ function App() {
               <button onClick={handleStartAddTag}>Add Tag</button>
             </div>
             {openAddQuote && <AddQuote />}
-            {(openEditQuote && quoteToEdit) && <EditQuote QuoteToEdit={quoteToEdit} /> }
+            {(openEditQuote&& quoteToEdit) && <EditQuote QuoteToEdit={quoteToEdit} /> }
             {
               (openEditQuote && !quoteToEdit)&&
               <div>To Edit, select a Quote</div>
             }
-            {openAddTag && <div>Add Tag Form Goes Here</div>}
+            {(openAddTag) && <HandleTag/>}
           </div>
         </div>
       </section>
