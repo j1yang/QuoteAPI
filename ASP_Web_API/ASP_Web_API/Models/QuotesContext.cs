@@ -10,7 +10,7 @@ namespace ASP_Web_API.Models
 
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<Like> Likes { get; set; }
-        public DbSet<QuoteTag> QuoteTags { get; set; }
+        public DbSet<TagAssignment> QuoteTags { get; set; }
 
         public DbSet<Tag> Tags { get; set; }
 
@@ -18,17 +18,17 @@ namespace ASP_Web_API.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure many-to-many relationships
-            modelBuilder.Entity<QuoteTag>()
+            modelBuilder.Entity<TagAssignment>()
                 .HasKey(qt => new { qt.QuoteId, qt.TagId });
 
-            modelBuilder.Entity<QuoteTag>()
+            modelBuilder.Entity<TagAssignment>()
                 .HasOne(qt => qt.Quote)
-                .WithMany(q => q.QuoteTags)
+                .WithMany(q => q.TagAssignments)
                 .HasForeignKey(qt => qt.QuoteId);
 
-            modelBuilder.Entity<QuoteTag>()
+            modelBuilder.Entity<TagAssignment>()
                 .HasOne(qt => qt.Tag)
-                .WithMany(t => t.QuoteTags)
+                .WithMany(t => t.TagAssignments)
                 .HasForeignKey(qt => qt.TagId);
 
 
@@ -48,12 +48,12 @@ namespace ASP_Web_API.Models
                 new Like { Id = 5, QuoteId = 5 }
             );
 
-            modelBuilder.Entity<QuoteTag>().HasData(
-               new QuoteTag { QuoteId = 1, TagId = 1 },
-               new QuoteTag { QuoteId = 2, TagId = 2 },
-               new QuoteTag { QuoteId = 3, TagId = 1 },
-               new QuoteTag { QuoteId = 4, TagId = 3 },
-               new QuoteTag { QuoteId = 5, TagId = 2 }
+            modelBuilder.Entity<TagAssignment>().HasData(
+               new TagAssignment { QuoteId = 1, TagId = 1 },
+               new TagAssignment { QuoteId = 2, TagId = 2 },
+               new TagAssignment { QuoteId = 3, TagId = 1 },
+               new TagAssignment { QuoteId = 4, TagId = 3 },
+               new TagAssignment { QuoteId = 5, TagId = 2 }
            );
 
             modelBuilder.Entity<Tag>().HasData(

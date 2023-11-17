@@ -1,6 +1,6 @@
 ﻿namespace ASP_Web_API.Models
 {
-    public class QuoteTag
+    public class TagAssignment
     {
         public int QuoteId { get; set; }
         public Quote Quote { get; set; }

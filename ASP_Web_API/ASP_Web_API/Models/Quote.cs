@@ -7,7 +7,7 @@
         public string Author { get; set; }
 
 
-        public List<QuoteTag> QuoteTags { get; set; } = new List<QuoteTag>();
+        public List<TagAssignment> TagAssignments { get; set; } = new List<TagAssignment>();
         public List<Like> Likes { get; set; } = new List<Like>();
     }
 }

@@ -55,7 +55,7 @@ namespace ASP_Web_API.Controllers
             {
                 Text = newQuoteRequest.Text,
                 Author = newQuoteRequest.Author,
-                QuoteTags = existingTags.Select(tag => new QuoteTag { Tag = tag }).ToList()
+                TagAssignments = existingTags.Select(tag => new TagAssignment { Tag = tag }).ToList()
             };
 
             // Add and save the new quote
@@ -79,7 +79,7 @@ namespace ASP_Web_API.Controllers
         public IActionResult GetQuoteByTag(string name)
         {
             Tag tag = _quotesContext.Tags
-        .Include(t => t.QuoteTags)
+        .Include(t => t.TagAssignments)
         .ThenInclude(qt => qt.Quote)
         .FirstOrDefault(t => t.Name == name);
 
@@ -88,7 +88,7 @@ namespace ASP_Web_API.Controllers
                 return NotFound($"Tag with name '{name}' not found.");
             }
 
-            List<QuoteDto> quotes = tag.QuoteTags
+            List<QuoteDto> quotes = tag.TagAssignments
                 .Select(qt => new QuoteDto
                 {
                     Id = qt.Quote.Id,
@@ -105,7 +105,7 @@ namespace ASP_Web_API.Controllers
         public IActionResult GetTagByQuoteId(int id)
         {
             Quote quote = _quotesContext.Quotes
-                .Include(q => q.QuoteTags)
+                .Include(q => q.TagAssignments)
                 .ThenInclude(qt => qt.Tag)
                 .FirstOrDefault(q => q.Id == id);
 
@@ -114,7 +114,7 @@ namespace ASP_Web_API.Controllers
                 return NotFound($"Quote with ID '{id}' not found.");
             }
 
-            List<TagDto> tags = quote.QuoteTags
+            List<TagDto> tags = quote.TagAssignments
                 .Select(qt => new TagDto
                 {
                     Id = qt.Tag.Id,
@@ -133,7 +133,7 @@ namespace ASP_Web_API.Controllers
             }
 
             var quote = _quotesContext.Quotes
-                .Include(q => q.QuoteTags)
+                .Include(q => q.TagAssignments)
                 .ThenInclude(qt => qt.Tag)
                 .FirstOrDefault(q => q.Id == id);
 
@@ -147,20 +147,64 @@ namespace ASP_Web_API.Controllers
             quote.Author = quoteDto.Author;
 
             // Update associated tags
-            quote.QuoteTags.Clear();
+            quote.TagAssignments.Clear();
             foreach (var tagId in quoteDto.Tags)
             {
                 var tag = _quotesContext.Tags.Find(tagId);
                 if (tag != null)
                 {
-                    quote.QuoteTags.Add(new QuoteTag { Tag = tag });
+                    quote.TagAssignments.Add(new TagAssignment { Tag = tag });
                 }
             }
 
             _quotesContext.SaveChanges();
 
-            return Ok(quote.QuoteTags);
+            return Ok(quote.TagAssignments);
         }
 
+        [HttpPost("addNewTag")]
+        public async Task<ActionResult<Tag>> AddNewTag(Tag newTag)
+        {
+            if (string.IsNullOrWhiteSpace(newTag.Name))
+            {
+                return BadRequest("Tag name cannot be empty.");
+            }
+
+            // Check if the tag with the same name already exists
+            if (await _quotesContext.Tags.AnyAsync(t => t.Name == newTag.Name))
+            {
+                return BadRequest("Tag with the same name already exists.");
+            }
+
+            // Add the new tag to the database
+            _quotesContext.Tags.Add(newTag);
+            await _quotesContext.SaveChangesAsync();
+
+            return Ok(newTag);
+        }
+
+        [HttpGet("Likes")]
+        public IActionResult GetAllLikes()
+        {
+            List<Like> allLikes = _quotesContext.Likes.ToList();
+            return Ok(allLikes);
+        }
+
+        [HttpPost("Like/{quoteId}")]
+        public IActionResult LikeQuote(int quoteId)
+        {
+            var quote = _quotesContext.Quotes.Find(quoteId);
+
+            if (quote == null)
+            {
+                return NotFound();
+            }
+
+            var like = new Like { QuoteId = quoteId };
+            _quotesContext.Likes.Add(like);
+            _quotesContext.SaveChanges();
+
+            return Ok();
+        }
     }
 }
