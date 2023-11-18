@@ -206,5 +206,12 @@ namespace ASP_Web_API.Controllers
 
             return Ok();
         }
+
+        [HttpGet("/quotes/MostLiked")]
+        public IActionResult GetMostLikedQuotes()
+        {
+            var mostLikedQuotes = _quotesContext.Quotes.OrderByDescending(q => q.Likes.Count).Take(10).ToList();
+            return Ok(mostLikedQuotes);
+        }
     }
 }
