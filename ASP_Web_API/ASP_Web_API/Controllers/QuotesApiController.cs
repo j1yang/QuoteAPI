@@ -213,5 +213,25 @@ namespace ASP_Web_API.Controllers
             var mostLikedQuotes = _quotesContext.Quotes.OrderByDescending(q => q.Likes.Count).Take(10).ToList();
             return Ok(mostLikedQuotes);
         }
+
+        [HttpGet("tags/search")]
+        public ActionResult<IEnumerable<Tag>> Search([FromQuery] string query)
+        {
+            try
+            {
+                // Filter tags based on the search query
+                var matchingTags = _quotesContext.Tags
+                    .Where(tag => tag.Name.ToLower().Contains(query.ToLower()))
+                    .ToList();
+
+                return Ok(matchingTags);
+            }
+            catch (System.Exception ex)
+            {
+                // Log the exception in a real application
+                return StatusCode(500, new { error = "Internal Server Error" });
+            }
+        }
+
     }
 }
