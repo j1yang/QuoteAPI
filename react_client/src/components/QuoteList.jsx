@@ -141,7 +141,7 @@ const QuoteList = ({handleQuoteClick}) => {
         
       </div>
 
-      <ul>
+      <ul className='overflow-y-auto h-[600px]'>
         {(quotes) && quotes.map(quote => (
           <li key={quote.id} className="mb-2 hover:cursor-pointer hover:bg-gray-200	hover:text-black" onClick={() => handleQuoteClick(quote)}>
             <div className='flex justify-between h-[45px]'>
