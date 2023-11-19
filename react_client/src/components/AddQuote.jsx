@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Autosuggest from 'react-autosuggest';
 
 const AddQuote = () => {
   const [newQuote, setNewQuote] = useState({ Text: '', Author: '', Tags: [] });
   const [allTags, setAllTags] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     // Fetch all tags from the API
@@ -20,8 +23,21 @@ const AddQuote = () => {
     }
   };
 
+  const getSuggestions = (value) => {
+    const inputValueLowerCase = value.trim().toLowerCase();
+    return allTags.filter(tag => tag.name.toLowerCase().includes(inputValueLowerCase));
+  };
+
+  const onSuggestionsFetchRequested = ({ value }) => {
+    setSuggestions(getSuggestions(value));
+  };
+
+  const onSuggestionsClearRequested = () => {
+    setSuggestions([]);
+  };
+
   const addQuote = () => {
-    console.log(newQuote)
+    console.log(newQuote);
     axios.post('https://localhost:7082/addNewQuote', newQuote, {
       headers: {
         'Content-Type': 'application/json',
@@ -29,6 +45,26 @@ const AddQuote = () => {
     })
       .then(response => console.log('Quote added successfully:', response.data))
       .catch(error => console.error('Error adding quote:', error));
+  };
+  const onSuggestionSelected = (event, { suggestion }) => {
+    handleTagChange(suggestion.id, true);
+    setInputValue('');
+  };
+
+  const onChange = (event, { newValue }) => {
+    setInputValue(newValue);
+  };
+
+  const renderSuggestion = (suggestion) => (
+    <div className='cursor-pointer'>
+      {suggestion.name}
+    </div>
+  );
+
+  const inputProps = {
+    placeholder: 'Search a tag',
+    value: inputValue,
+    onChange: onChange,
   };
 
   return (
@@ -72,6 +108,16 @@ const AddQuote = () => {
           </div>
         ))}
       </div>
+
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={(suggestion) => {suggestion.id}}
+          renderSuggestion={renderSuggestion}
+          onSuggestionSelected={onSuggestionSelected}
+          inputProps={inputProps}
+        />
       </div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

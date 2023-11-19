@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Autosuggest from 'react-autosuggest';
 
 const EditQuote = ({ QuoteToEdit }) => {
   const [allTags, setAllTags] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [inputValue, setInputValue] = useState('');
   const [editedQuote, setEditedQuote] = useState({
     Id: '',
     Text: '',
@@ -73,6 +76,39 @@ const EditQuote = ({ QuoteToEdit }) => {
     });
   }, [QuoteToEdit]);
 
+  const getSuggestions = (value) => {
+    const inputValueLowerCase = value.trim().toLowerCase();
+    return allTags.filter(tag => tag.name.toLowerCase().includes(inputValueLowerCase));
+  };
+
+  const onSuggestionsFetchRequested = ({ value }) => {
+    setSuggestions(getSuggestions(value));
+  };
+
+  const onSuggestionsClearRequested = () => {
+    setSuggestions([]);
+  };
+
+  const onSuggestionSelected = (event, { suggestion }) => {
+    handleTagChange(suggestion.id, true);
+    setInputValue('');
+  };
+
+  const onChange = (event, { newValue }) => {
+    setInputValue(newValue);
+  };
+
+  const renderSuggestion = (suggestion) => (
+    <div className='cursor-pointer'>
+      {suggestion.name}
+    </div>
+  );
+
+  const inputProps = {
+    placeholder: 'Search a tag',
+    value: inputValue,
+    onChange: onChange,
+  };
 
   return (
     <div className="p-8 rounded shadow bg-gray">
@@ -116,6 +152,15 @@ const EditQuote = ({ QuoteToEdit }) => {
               </div>
             ))}
           </div>
+          <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={(suggestion) => {suggestion.id}}
+          renderSuggestion={renderSuggestion}
+          onSuggestionSelected={onSuggestionSelected}
+          inputProps={inputProps}
+        />
         </div>
         <button type="submit" className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 focus:outline-none">
           Update Quote
