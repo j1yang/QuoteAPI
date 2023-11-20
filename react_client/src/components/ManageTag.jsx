@@ -23,10 +23,9 @@ const ManageTag = (props) => {
 
     // Create a new tag object
     const newTag = {
-      name: inputValue.trim(), // Assuming the API expects the tag name
+      name: inputValue.trim(), 
     };
 
-    // Make a POST request to add the new tag
     axios.post('https://localhost:7082/addNewTag', newTag)
       .then(response => {
         setExistingTags([...existingTags, response.data]); 
