@@ -44,12 +44,6 @@ namespace ASP_Web_API.Controllers
             Console.BackgroundColor = ConsoleColor.Green;
             Console.WriteLine(existingTags);
 
-            //// Check if any requested tags are not found
-            //if (existingTags.Count != newQuoteRequest.Tags.Count)
-            //{
-            //    return BadRequest("One or more tags not found.");
-            //}
-
             // Create the Quote with associated tags
             Quote quote = new Quote()
             {
