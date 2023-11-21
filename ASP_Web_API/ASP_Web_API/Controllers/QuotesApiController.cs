@@ -14,6 +14,7 @@ namespace ASP_Web_API.Controllers
             _quotesContext = quotesContext;
         }
 
+        //get quotes
         [HttpGet("/quotes")]
         public IActionResult GetAllQuotes()
         {
@@ -21,6 +22,8 @@ namespace ASP_Web_API.Controllers
                                  .ToList();
             return Ok(quotes);
         }
+
+        //get tags
         [HttpGet("/tags")]
         public IActionResult GetTags()
         {
@@ -28,6 +31,7 @@ namespace ASP_Web_API.Controllers
             return Ok(tags);
         }
 
+        //add new quote to db
         [HttpPost("/addNewQuote")]
         public IActionResult AddNewQuote([FromBody] NewQuoteRequest newQuoteRequest)
         {
@@ -60,7 +64,7 @@ namespace ASP_Web_API.Controllers
         }
 
 
-
+        //get quote by id
         [HttpGet("/quotes/{id}")]
         public IActionResult GetQuoteById(int id)
         {
@@ -69,6 +73,7 @@ namespace ASP_Web_API.Controllers
             return Ok(quote);
         }
 
+        //get quote by tag
         [HttpGet("/quotes/tag={name}")]
         public IActionResult GetQuoteByTag(string name)
         {
@@ -95,6 +100,7 @@ namespace ASP_Web_API.Controllers
             return Ok(quotes);
         }
 
+        //get tag by quote id
         [HttpGet("/tags/quote={id}")]
         public IActionResult GetTagByQuoteId(int id)
         {
@@ -118,6 +124,8 @@ namespace ASP_Web_API.Controllers
 
             return Ok(tags);
         }
+
+        //edit quote
         [HttpPut("quotes/edit/{id}")]
         public IActionResult EditQuote(int id, [FromBody] EditedQuoteDto quoteDto)
         {
@@ -156,6 +164,7 @@ namespace ASP_Web_API.Controllers
             return Ok(quote.TagAssignments);
         }
 
+        //add new tags
         [HttpPost("addNewTag")]
         public async Task<ActionResult<Tag>> AddNewTag(Tag newTag)
         {
@@ -177,6 +186,7 @@ namespace ASP_Web_API.Controllers
             return Ok(newTag);
         }
 
+        //get all likes
         [HttpGet("Likes")]
         public IActionResult GetAllLikes()
         {
@@ -184,6 +194,7 @@ namespace ASP_Web_API.Controllers
             return Ok(allLikes);
         }
 
+        //like association from user
         [HttpPost("Like/{quoteId}")]
         public IActionResult LikeQuote(int quoteId)
         {
@@ -201,6 +212,7 @@ namespace ASP_Web_API.Controllers
             return Ok();
         }
 
+        //ten quotes most liked likes
         [HttpGet("/quotes/MostLiked")]
         public IActionResult GetMostLikedQuotes()
         {
@@ -208,23 +220,36 @@ namespace ASP_Web_API.Controllers
             return Ok(mostLikedQuotes);
         }
 
+        //ten quotes least liked likes
+        [HttpGet("/quotes/LeastLiked")]
+        public IActionResult GetLeastLikedQuotes()
+        {
+            var leastLikedQuotes = _quotesContext.Quotes.OrderBy(q => q.Likes.Count).Take(10).ToList();
+            return Ok(leastLikedQuotes);
+        }
+
+        //GET quotes that more than 15 likes
+        [HttpGet("/quotes/15pluslike")]
+        public IActionResult Get15PlusLikedQuotes()
+        {
+            var LikedQuotes = _quotesContext.Quotes
+                .Where(q => q.Likes.Count > 15)
+                .OrderBy(q => q.Likes.Count)
+                .Take(10)
+                .ToList();
+
+            return Ok(LikedQuotes);
+        }
+
+        //Tag serach query but i've implemented this feature in frontend side.
         [HttpGet("tags/search")]
         public ActionResult<IEnumerable<Tag>> Search([FromQuery] string query)
         {
-            try
-            {
-                // Filter tags based on the search query
-                var matchingTags = _quotesContext.Tags
+            var matchingTags = _quotesContext.Tags
                     .Where(tag => tag.Name.ToLower().Contains(query.ToLower()))
                     .ToList();
 
-                return Ok(matchingTags);
-            }
-            catch (System.Exception ex)
-            {
-                // Log the exception in a real application
-                return StatusCode(500, new { error = "Internal Server Error" });
-            }
+            return Ok(matchingTags);
         }
 
     }
