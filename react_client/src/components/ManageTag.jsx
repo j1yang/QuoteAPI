@@ -5,8 +5,9 @@ const ManageTag = (props) => {
   const [existingTags, setExistingTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
+  //when component mounted
   useEffect(() => {
-    // Fetch all tags from the API
+    // GET all tags
     axios.get('https://localhost:7082/tags')
       .then(response => {
         setExistingTags(response.data) 
@@ -14,6 +15,7 @@ const ManageTag = (props) => {
       .catch(error => console.error('Error fetching tags:', error));
   }, []);
 
+  //Add New Tag
   const addTag = () => {
     // Check if inputValue is not empty
     if (inputValue.trim() === '') {
@@ -26,6 +28,7 @@ const ManageTag = (props) => {
       name: inputValue.trim(), 
     };
 
+    // POST new tag
     axios.post('https://localhost:7082/addNewTag', newTag)
       .then(response => {
         setExistingTags([...existingTags, response.data]); 

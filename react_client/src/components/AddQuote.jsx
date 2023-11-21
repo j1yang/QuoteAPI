@@ -9,12 +9,13 @@ const AddQuote = () => {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    // Fetch all tags from the API
+    // GET all Tag when component mounted
     axios.get('https://localhost:7082/tags')
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }, []);
 
+  // Handle tag selections
   const handleTagChange = (tagName, isChecked) => {
     if (isChecked) {
       setNewQuote(prevQuote => ({ ...prevQuote, Tags: [...prevQuote.Tags, tagName] }));
@@ -23,19 +24,23 @@ const AddQuote = () => {
     }
   };
 
+  //React auto-suggestion : get suggestion
   const getSuggestions = (value) => {
     const inputValueLowerCase = value.trim().toLowerCase();
     return allTags.filter(tag => tag.name.toLowerCase().includes(inputValueLowerCase));
   };
 
+  //React auto-suggestion : setSuggestion
   const onSuggestionsFetchRequested = ({ value }) => {
     setSuggestions(getSuggestions(value));
   };
 
+  //React auto-suggestion: clear
   const onSuggestionsClearRequested = () => {
     setSuggestions([]);
   };
 
+  // POST add new quote to db
   const addQuote = () => {
     console.log(newQuote);
     axios.post('https://localhost:7082/addNewQuote', newQuote, {
@@ -46,15 +51,19 @@ const AddQuote = () => {
       .then(response => console.log('Quote added successfully:', response.data))
       .catch(error => console.error('Error adding quote:', error));
   };
+
+  // on suggestion select -> handle tag selection
   const onSuggestionSelected = (event, { suggestion }) => {
     handleTagChange(suggestion.id, true);
     setInputValue('');
   };
 
+  //query
   const onChange = (event, { newValue }) => {
     setInputValue(newValue);
   };
 
+  //display suggestion
   const renderSuggestion = (suggestion) => (
     <div className='cursor-pointer'>
       {suggestion.name}

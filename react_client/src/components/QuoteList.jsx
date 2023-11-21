@@ -11,6 +11,7 @@ const QuoteList = ({handleQuoteClick}) => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [likes, setLikes] = useState({});
 
+  //POST Quote like click event.
   const handleLikeClick = async (quoteId) => {
     try {
       await axios.post(`https://localhost:7082/Like/${quoteId}`);
@@ -21,6 +22,7 @@ const QuoteList = ({handleQuoteClick}) => {
     }
   };
   
+  //Update quotes by filter. will be called constantly
   const updateFetch = () => {
     if (searchFilterRef.current.value === 'all') {
       fetchQuotes();
@@ -30,10 +32,16 @@ const QuoteList = ({handleQuoteClick}) => {
       fetchQuoteById();
     } else if (searchFilterRef.current.value === 'mostliked') {
       fetchMostLikedQuotes();
+    }else if (searchFilterRef.current.value === 'leastliked') {
+      fetchLeastLikedQuotes();
+    }else if (searchFilterRef.current.value === '15plusliked') {
+      fetch15PlusLikedQuotes();
     } else {
       console.log('not fetching now...', searchFilterRef.current.value);
     }
   };
+
+  //GET ten most liked quotes
   const fetchMostLikedQuotes = () => {
     axios.get('https://localhost:7082/quotes/mostliked')
       .then(response => {
@@ -41,7 +49,23 @@ const QuoteList = ({handleQuoteClick}) => {
       })
       .catch(error => console.error('Error fetching most liked quotes:', error));
   };
-
+  //GET ten least liked quotes
+  const fetchLeastLikedQuotes = () => {
+    axios.get('https://localhost:7082/quotes/leastliked')
+      .then(response => {
+        setQuotes(response.data);
+      })
+      .catch(error => console.error('Error fetching most liked quotes:', error));
+  };
+  //GET 15 plus liked quotes
+  const fetch15PlusLikedQuotes = () => {
+    axios.get('https://localhost:7082/quotes/15pluslike')
+      .then(response => {
+        setQuotes(response.data);
+      })
+      .catch(error => console.error('Error fetching most liked quotes:', error));
+  };
+  // GET quotes
   const fetchQuotes = () => {
     axios.get('https://localhost:7082/quotes')
         .then(response => {
@@ -50,6 +74,7 @@ const QuoteList = ({handleQuoteClick}) => {
         .catch(error => console.error('Error fetching quotes:', error));
     //console.log('fetching All Quotes')
   }
+  // GET likes
   const fetchLikes = () => {
     axios.get('https://localhost:7082/Likes')
         .then(response => {
@@ -61,12 +86,14 @@ const QuoteList = ({handleQuoteClick}) => {
     //console.log('fetching All Quotes')
   }
 
+  //GET all Tags
   const fetchTag = () => {
     axios.get('https://localhost:7082/tags')
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }
 
+  //GET Quotes by tag
   const fetchQuotesByTag = () => {
     if (tagRef.current.value) {
       axios.get(`https://localhost:7082/quotes/tag=${tagRef.current.value}`)
@@ -81,6 +108,7 @@ const QuoteList = ({handleQuoteClick}) => {
 
   }
 
+  //GET quote by id
   const fetchQuoteById = () => {
     if (quoteIdRef.current.value) {
       axios.get(`https://localhost:7082/quotes/${quoteIdRef.current.value}`)
@@ -92,15 +120,19 @@ const QuoteList = ({handleQuoteClick}) => {
     }
   }
 
+  // Rreact useEffect hook that handle quote refersh
   useEffect(() => {
     fetchTag();
     fetchLikes();
+    
+    //call update fetch every 1000ms
     const intervalId = setInterval(updateFetch, 1000);
 
     return () => clearInterval(intervalId);
   }, [forceUpdate]);
   
 
+  // Reset quotes when filter is changed
   const handleSearchFilterChange = (event) => {
     //console.log('Selected filter:', event.target.value);
     setQuotes([]); // Clear existing quotes when changing the filter
@@ -116,6 +148,9 @@ const QuoteList = ({handleQuoteClick}) => {
           <option value="tag">Search by Tag</option>
           <option value="id">Search by ID</option>
           <option value="mostliked">Search most liked quotes</option>
+          <option value="leastliked">Search least liked quotes</option>
+          <option value="15plusliked">Search 15+ liked quotes</option>
+
         </select>
 
        

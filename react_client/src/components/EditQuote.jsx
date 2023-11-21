@@ -13,12 +13,14 @@ const EditQuote = ({ QuoteToEdit }) => {
     Tags: [],
   });
 
+  //GET all tags
   const fetchTags = () => {
     axios.get('https://localhost:7082/tags')
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }
 
+  //GET Tags by qutoe id
   const fetchTagsByQuoteId = () => {
     axios.get(`https://localhost:7082/tags/quote=${QuoteToEdit.id}`)
       .then(response => {
@@ -30,6 +32,7 @@ const EditQuote = ({ QuoteToEdit }) => {
       .catch(error => console.error('Error fetching tags:', error));
   }
 
+  // Load Edit quote input value
   useEffect(() => {
     fetchTags();
     if (QuoteToEdit.id) {
@@ -50,6 +53,7 @@ const EditQuote = ({ QuoteToEdit }) => {
     }
   };
 
+  // PUT edit quote
   const handleEditSubmit = (e) => {
     e.preventDefault();
     console.log(editedQuote);
@@ -63,10 +67,12 @@ const EditQuote = ({ QuoteToEdit }) => {
       });
   };
 
+  //render message when quote is not selected
   if (!QuoteToEdit) {
     return (<p>Select a quote, please</p>);
   }
 
+  //initialize Quote to be edited
   useEffect(() => {
     setEditedQuote({
       Id: QuoteToEdit.id || '',
