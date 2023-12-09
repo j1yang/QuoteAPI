@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ASP_Web_API.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASP_Web_API.Models
 {
-    public class QuotesContext : DbContext
+    public class QuotesContext : IdentityDbContext<User>
     {
         public QuotesContext(DbContextOptions<QuotesContext> options)
             : base(options) { }
@@ -17,6 +19,12 @@ namespace ASP_Web_API.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // call base class version to init Identity entities:
+            base.OnModelCreating(modelBuilder);
+
+            // apply our role config'n
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+
             // Configure many-to-many relationships
             modelBuilder.Entity<TagAssignment>()
                 .HasKey(qt => new { qt.QuoteId, qt.TagId });
