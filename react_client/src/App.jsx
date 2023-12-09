@@ -5,6 +5,8 @@ import QuoteList from './components/QuoteList';
 
 import './App.css';
 import HandleTag from './components/ManageTag';
+import Signup from './components/Signup';
+import Login from './components/Login';
 
 function App() {
   const [quoteToEdit, setQuoteToEdit] = useState(null);
@@ -36,11 +38,25 @@ function App() {
     setOpenEditQuote(false); 
     setQuoteToEdit(null);
   };
+  const handleLogout = () => {
+    // Clear stored token and expiration time on logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationTime');
+    setIsLoggedIn(false);
+  };
+  const handleLogin = (token) => {
+    setUserToken(token);
+    setLoggedIn(true);
+  };
+  const [displayLogin, setDisplayLogin] = useState(true);
+  const [userToken, setUserToken] = useState(null);
+  const [isLoggedIn, setLoggedIn] = useState(false); 
 
   return (
     <div>
       <h1 className='mb-[150px]'>React SPA Client</h1>
-      <section className='flex w-[1300px] h-[900px] mx-auto'>
+      {isLoggedIn ? ( 
+        <section className='flex w-[1300px] h-[900px] mx-auto'>
         <div className='w-[60%]'>
           <QuoteList handleQuoteClick={handleQuoteClick} />
         </div>
@@ -61,6 +77,12 @@ function App() {
           </div>
         </div>
       </section>
+      ) : (
+        displayLogin ? 
+        <Login handleLogin={handleLogin} setDisplayLogin={setDisplayLogin} /> 
+        :
+        <Signup handleLogin={handleLogin} setDisplayLogin={setDisplayLogin} /> 
+      )}
     </div>
   );
 }
