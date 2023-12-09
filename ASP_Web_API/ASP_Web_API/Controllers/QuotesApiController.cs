@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ASP_Web_API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASP_Web_API.Controllers
 {
@@ -14,8 +15,10 @@ namespace ASP_Web_API.Controllers
             _quotesContext = quotesContext;
         }
 
+
         //get quotes
-        [HttpGet("/quotes")]
+        [HttpGet("/api/quotes")]
+        [Authorize()]
         public IActionResult GetAllQuotes()
         {
             List<Quote> quotes = _quotesContext.Quotes
@@ -24,7 +27,7 @@ namespace ASP_Web_API.Controllers
         }
 
         //get tags
-        [HttpGet("/tags")]
+        [HttpGet("/api/tags")]
         public IActionResult GetTags()
         {
             List<Tag> tags = _quotesContext.Tags.ToList();
@@ -32,7 +35,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //add new quote to db
-        [HttpPost("/addNewQuote")]
+        [HttpPost("/api/addNewQuote")]
+        [Authorize()]
         public IActionResult AddNewQuote([FromBody] NewQuoteRequest newQuoteRequest)
         {
             // Check if Text is null or empty
@@ -65,7 +69,8 @@ namespace ASP_Web_API.Controllers
 
 
         //get quote by id
-        [HttpGet("/quotes/{id}")]
+        [HttpGet("/api/quotes/{id}")]
+        [Authorize()]
         public IActionResult GetQuoteById(int id)
         {
             Quote quote = _quotesContext.Quotes.FirstOrDefault(t => t.Id == id);
@@ -74,7 +79,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //get quote by tag
-        [HttpGet("/quotes/tag={name}")]
+        [HttpGet("/api/quotes/tag={name}")]
+        [Authorize()]
         public IActionResult GetQuoteByTag(string name)
         {
             Tag tag = _quotesContext.Tags
@@ -101,7 +107,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //get tag by quote id
-        [HttpGet("/tags/quote={id}")]
+        [HttpGet("/api/tags/quote={id}")]
+        [Authorize()]
         public IActionResult GetTagByQuoteId(int id)
         {
             Quote quote = _quotesContext.Quotes
@@ -126,7 +133,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //edit quote
-        [HttpPut("quotes/edit/{id}")]
+        [HttpPut("/api/quotes/edit/{id}")]
+        [Authorize()]
         public IActionResult EditQuote(int id, [FromBody] EditedQuoteDto quoteDto)
         {
             if (id != quoteDto.Id)
@@ -165,7 +173,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //add new tags
-        [HttpPost("addNewTag")]
+        [HttpPost("/api/addNewTag")]
+        [Authorize()]
         public async Task<ActionResult<Tag>> AddNewTag(Tag newTag)
         {
             if (string.IsNullOrWhiteSpace(newTag.Name))
@@ -187,7 +196,7 @@ namespace ASP_Web_API.Controllers
         }
 
         //get all likes
-        [HttpGet("Likes")]
+        [HttpGet("/api/Likes")]
         public IActionResult GetAllLikes()
         {
             List<Like> allLikes = _quotesContext.Likes.ToList();
@@ -195,7 +204,7 @@ namespace ASP_Web_API.Controllers
         }
 
         //like association from user
-        [HttpPost("Like/{quoteId}")]
+        [HttpPost("/api/Like/{quoteId}")]
         public IActionResult LikeQuote(int quoteId)
         {
             var quote = _quotesContext.Quotes.Find(quoteId);
@@ -213,7 +222,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //ten quotes most liked likes
-        [HttpGet("/quotes/MostLiked")]
+        [HttpGet("/api/quotes/MostLiked")]
+        [Authorize()]
         public IActionResult GetMostLikedQuotes()
         {
             var mostLikedQuotes = _quotesContext.Quotes.OrderByDescending(q => q.Likes.Count).Take(10).ToList();
@@ -221,7 +231,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //ten quotes least liked likes
-        [HttpGet("/quotes/LeastLiked")]
+        [HttpGet("/api/quotes/LeastLiked")]
+        [Authorize()]
         public IActionResult GetLeastLikedQuotes()
         {
             var leastLikedQuotes = _quotesContext.Quotes.OrderBy(q => q.Likes.Count).Take(10).ToList();
@@ -229,7 +240,8 @@ namespace ASP_Web_API.Controllers
         }
 
         //GET quotes that more than 15 likes
-        [HttpGet("/quotes/15pluslike")]
+        [HttpGet("/api/quotes/15pluslike")]
+        [Authorize()]
         public IActionResult Get15PlusLikedQuotes()
         {
             var LikedQuotes = _quotesContext.Quotes
@@ -242,7 +254,7 @@ namespace ASP_Web_API.Controllers
         }
 
         //Tag serach query but i've implemented this feature in frontend side.
-        [HttpGet("tags/search")]
+        [HttpGet("/api/tags/search")]
         public ActionResult<IEnumerable<Tag>> Search([FromQuery] string query)
         {
             var matchingTags = _quotesContext.Tags
