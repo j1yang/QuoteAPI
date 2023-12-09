@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 
-const EditQuote = ({ QuoteToEdit }) => {
+const EditQuote = ({ QuoteToEdit, config }) => {
   const [allTags, setAllTags] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -15,14 +15,14 @@ const EditQuote = ({ QuoteToEdit }) => {
 
   //GET all tags
   const fetchTags = () => {
-    axios.get('https://localhost:7082/tags')
+    axios.get('https://localhost:7082/api/tags',config)
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }
 
   //GET Tags by qutoe id
   const fetchTagsByQuoteId = () => {
-    axios.get(`https://localhost:7082/tags/quote=${QuoteToEdit.id}`)
+    axios.get(`https://localhost:7082/api/tags/quote=${QuoteToEdit.id}`,config)
       .then(response => {
         setEditedQuote(prevState => ({
           ...prevState,
@@ -58,7 +58,7 @@ const EditQuote = ({ QuoteToEdit }) => {
     e.preventDefault();
     console.log(editedQuote);
     axios
-      .put(`https://localhost:7082/quotes/edit/${editedQuote.Id}`, editedQuote)
+      .put(`https://localhost:7082/api/quotes/edit/${editedQuote.Id}`, editedQuote,config)
       .then((response) => {
         console.log('Quote updated successfully:', response.data);
       })

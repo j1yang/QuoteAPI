@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import AddQuote from './components/AddQuote';
 import EditQuote from './components/EditQuote';
 import QuoteList from './components/QuoteList';
@@ -14,6 +14,30 @@ function App() {
   const [openEditQuote, setOpenEditQuote] = useState(false);
   const [openAddTag, setOpenAddTag] = useState(false);
 
+  const [config, setConfig] = useState()
+
+  const fetchConfig = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token not available. Please log in.');
+      return null;
+    }
+  
+    return {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    };
+  };
+  useEffect(() => {
+    const initializeConfig = async () => {
+      const fetchedConfig = await fetchConfig();
+      setConfig(()=>fetchedConfig)
+    };
+  
+    initializeConfig();
+  }, []);
+  
   const handleQuoteClick = (quote) => {
     setQuoteToEdit(quote);
   };
@@ -58,7 +82,7 @@ function App() {
       {isLoggedIn ? ( 
         <section className='flex w-[1300px] h-[900px] mx-auto'>
         <div className='w-[60%]'>
-          <QuoteList handleQuoteClick={handleQuoteClick} />
+          <QuoteList handleQuoteClick={handleQuoteClick} config={config}/>
         </div>
         <div className='w-[40%]'>
           <div className='h-[50%]'>
@@ -67,13 +91,13 @@ function App() {
               <button onClick={handleStartEdit}>Start Edit</button>
               <button onClick={handleStartAddTag}>Add Tag</button>
             </div>
-            {openAddQuote && <AddQuote />}
-            {(openEditQuote&& quoteToEdit) && <EditQuote QuoteToEdit={quoteToEdit} /> }
+            {openAddQuote && <AddQuote config={config}/>}
+            {(openEditQuote&& quoteToEdit) && <EditQuote QuoteToEdit={quoteToEdit} config={config}/> }
             {
               (openEditQuote && !quoteToEdit)&&
               <div>To Edit, select a Quote</div>
             }
-            {(openAddTag) && <HandleTag/>}
+            {(openAddTag) && <HandleTag config={config}/>}
           </div>
         </div>
       </section>

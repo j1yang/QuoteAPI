@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaThumbsUp } from 'react-icons/fa'; 
 
-const QuoteList = ({handleQuoteClick}) => {
+const QuoteList = ({handleQuoteClick, config}) => {
   const [quotes, setQuotes] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const searchFilterRef = useRef('');
@@ -11,10 +11,12 @@ const QuoteList = ({handleQuoteClick}) => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [likes, setLikes] = useState({});
 
+
+
   //POST Quote like click event.
   const handleLikeClick = async (quoteId) => {
     try {
-      await axios.post(`https://localhost:7082/Like/${quoteId}`);
+      await axios.post(`https://localhost:7082/api/Like/${quoteId}`,config);
       fetchLikes();
 
     } catch (error) {
@@ -43,7 +45,7 @@ const QuoteList = ({handleQuoteClick}) => {
 
   //GET ten most liked quotes
   const fetchMostLikedQuotes = () => {
-    axios.get('https://localhost:7082/quotes/mostliked')
+    axios.get('https://localhost:7082/api/quotes/mostliked',config)
       .then(response => {
         setQuotes(response.data);
       })
@@ -51,7 +53,7 @@ const QuoteList = ({handleQuoteClick}) => {
   };
   //GET ten least liked quotes
   const fetchLeastLikedQuotes = () => {
-    axios.get('https://localhost:7082/quotes/leastliked')
+    axios.get('https://localhost:7082/api/quotes/leastliked',config)
       .then(response => {
         setQuotes(response.data);
       })
@@ -59,7 +61,7 @@ const QuoteList = ({handleQuoteClick}) => {
   };
   //GET 15 plus liked quotes
   const fetch15PlusLikedQuotes = () => {
-    axios.get('https://localhost:7082/quotes/15pluslike')
+    axios.get('https://localhost:7082/api/quotes/15pluslike',config)
       .then(response => {
         setQuotes(response.data);
       })
@@ -67,7 +69,7 @@ const QuoteList = ({handleQuoteClick}) => {
   };
   // GET quotes
   const fetchQuotes = () => {
-    axios.get('https://localhost:7082/quotes')
+    axios.get('https://localhost:7082/api/quotes',config)
         .then(response => {
           setQuotes(response.data);
         })
@@ -76,7 +78,7 @@ const QuoteList = ({handleQuoteClick}) => {
   }
   // GET likes
   const fetchLikes = () => {
-    axios.get('https://localhost:7082/Likes')
+    axios.get('https://localhost:7082/api/Likes')
         .then(response => {
           {
             setLikes(response.data)
@@ -88,7 +90,7 @@ const QuoteList = ({handleQuoteClick}) => {
 
   //GET all Tags
   const fetchTag = () => {
-    axios.get('https://localhost:7082/tags')
+    axios.get('https://localhost:7082/api/tags')
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }
@@ -96,7 +98,7 @@ const QuoteList = ({handleQuoteClick}) => {
   //GET Quotes by tag
   const fetchQuotesByTag = () => {
     if (tagRef.current.value) {
-      axios.get(`https://localhost:7082/quotes/tag=${tagRef.current.value}`)
+      axios.get(`https://localhost:7082/api/quotes/tag=${tagRef.current.value}`, config)
         .then(response => {
           setQuotes(response.data);
           setForceUpdate(prev => prev + 1);
@@ -111,7 +113,7 @@ const QuoteList = ({handleQuoteClick}) => {
   //GET quote by id
   const fetchQuoteById = () => {
     if (quoteIdRef.current.value) {
-      axios.get(`https://localhost:7082/quotes/${quoteIdRef.current.value}`)
+      axios.get(`https://localhost:7082/api/quotes/${quoteIdRef.current.value}`, config)
         .then(response => {
           setQuotes([response.data]);
         })
@@ -120,16 +122,22 @@ const QuoteList = ({handleQuoteClick}) => {
     }
   }
 
+
   // Rreact useEffect hook that handle quote refersh
   useEffect(() => {
-    fetchTag();
-    fetchLikes();
-    
-    //call update fetch every 1000ms
-    const intervalId = setInterval(updateFetch, 1000);
+    if(config){
+      fetchTag();
+      fetchLikes();
 
-    return () => clearInterval(intervalId);
-  }, [forceUpdate]);
+      // call update fetch every 1500ms
+      const intervalId = setInterval(updateFetch, 1500);
+      return () => clearInterval(intervalId);
+    
+    }else{
+      console.log('no config')
+    }
+  }, [forceUpdate,config]);
+  
   
 
   // Reset quotes when filter is changed

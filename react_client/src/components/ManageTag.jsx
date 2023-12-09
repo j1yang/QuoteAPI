@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ManageTag = (props) => {
+const ManageTag = ({config}) => {
   const [existingTags, setExistingTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
   //when component mounted
   useEffect(() => {
     // GET all tags
-    axios.get('https://localhost:7082/tags')
+    axios.get('https://localhost:7082/api/tags')
       .then(response => {
         setExistingTags(response.data) 
         console.log(response.data)})
@@ -29,7 +29,7 @@ const ManageTag = (props) => {
     };
 
     // POST new tag
-    axios.post('https://localhost:7082/addNewTag', newTag)
+    axios.post('https://localhost:7082/api/addNewTag', newTag, config)
       .then(response => {
         setExistingTags([...existingTags, response.data]); 
         // Clear the input value

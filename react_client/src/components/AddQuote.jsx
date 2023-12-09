@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autosuggest from 'react-autosuggest';
 
-const AddQuote = () => {
+const AddQuote = ({config}) => {
   const [newQuote, setNewQuote] = useState({ Text: '', Author: '', Tags: [] });
   const [allTags, setAllTags] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -10,7 +10,7 @@ const AddQuote = () => {
 
   useEffect(() => {
     // GET all Tag when component mounted
-    axios.get('https://localhost:7082/tags')
+    axios.get('https://localhost:7082/api/tags')
       .then(response => setAllTags(response.data))
       .catch(error => console.error('Error fetching tags:', error));
   }, []);
@@ -43,11 +43,7 @@ const AddQuote = () => {
   // POST add new quote to db
   const addQuote = () => {
     console.log(newQuote);
-    axios.post('https://localhost:7082/addNewQuote', newQuote, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    axios.post('https://localhost:7082/api/addNewQuote', newQuote, config)
       .then(response => console.log('Quote added successfully:', response.data))
       .catch(error => console.error('Error adding quote:', error));
   };
