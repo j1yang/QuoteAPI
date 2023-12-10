@@ -154,8 +154,8 @@ def login_user(login_url, username, password):
     else:
         result['success'] = False
         result['token'] = ''
-        result['message'] = 'There was a problem logging in'
-        print(f'Detailed error message: {resp}')
+        result['message'] = 'Wrong credential..'
+        #print(f'Detailed error message: {resp.text}')
 
     return result
 
@@ -221,17 +221,17 @@ if __name__ == "__main__":
         elif main_index == 1:
             access_token = handle_login(login_url)
         elif main_index == 2:
-            if access_token is not '':
+            if access_token != '':
                 load_quotes("./quotes.txt", access_token)
             else:
                 print('Message: Please login or register.')
         elif main_index == 3:
-            if access_token is not '':
+            if access_token != '':
                 display_random_quote(access_token)
             else:
                 print('Message: Please login or register.')
         elif main_index == 4:
-            if access_token is not '':
+            if access_token != '':
                 add_new_quote(access_token)
             else:
                 print('Message: Please login or register.')

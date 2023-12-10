@@ -38,6 +38,10 @@ namespace ASP_Web_API.Extensions
 
         public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var jwtSettings = configuration.GetSection("JwtSettings");
+
+            //string secretStr = Environment.GetEnvironmentVariable("SECRET");
+            string secretStr = "This is my top secret key code for getting signing credentials.";
             // adding our custom auth service:
             services.AddScoped<IAuthService, AuthService>();
 
@@ -46,9 +50,7 @@ namespace ASP_Web_API.Extensions
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options => {
-                var jwtSettings = configuration.GetSection("JwtSettings");
-
-                string? secretStr = Environment.GetEnvironmentVariable("SECRET");
+                
 
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {

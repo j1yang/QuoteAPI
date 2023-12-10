@@ -60,9 +60,20 @@ namespace ASP_Web_API.Services
         {
             var secretKeyText = Environment.GetEnvironmentVariable("SECRET");
 
-            var key = Encoding.UTF8.GetBytes(secretKeyText);
-            var secret = new SymmetricSecurityKey(key);
+            if (string.IsNullOrEmpty(secretKeyText))
+            {
+                throw new InvalidOperationException("The environment variable 'SECRET' is not set or is empty.");
+            }
 
+            var key = Encoding.UTF8.GetBytes("This is my top secret key code for getting signing credentials."); //secretKeyText
+
+            // Ensure the key is at least 128 bits (16 bytes)
+            if (key.Length < 128 / 8)
+            {
+                throw new InvalidOperationException("Symmetric key should be at least 128 bits.");
+            }
+
+            var secret = new SymmetricSecurityKey(key);
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 

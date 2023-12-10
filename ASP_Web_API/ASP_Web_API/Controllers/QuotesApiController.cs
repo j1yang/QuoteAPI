@@ -64,7 +64,7 @@ namespace ASP_Web_API.Controllers
             _quotesContext.Quotes.Add(quote);
             _quotesContext.SaveChanges();
 
-            return Ok(existingTags);
+            return Ok(200);
         }
 
 
